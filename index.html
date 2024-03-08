@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YUDAMODS</title>
+    <!-- Tambahkan script reCAPTCHA API di bagian head -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</head>
+<body>
+    <h1>Verifikasi Anda Bukan Robot</h1>
+    <p>Silakan lakukan verifikasi untuk melanjutkan.</p>
+    
+    <!-- Tambahkan elemen reCAPTCHA di bagian body -->
+    <div class="g-recaptcha" data-sitekey="6Ld6AGYpAAAAAARhUIQVPytfMOmMv_VDZc5n3wV_" data-callback="verifikasiBerhasil"></div>
+
+    <script>
+        // Skrip JavaScript untuk menangani verifikasi
+        function verifikasiBerhasil() {
+            // Jika verifikasi berhasil, arahkan pengguna ke source.html
+            window.location.href = 'modz.html';
+        }
+    </script>
+</body>
+</html>

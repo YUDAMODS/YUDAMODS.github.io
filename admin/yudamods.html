@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Password Page</title>
+  <style>
+    body {
+      background: linear-gradient(to right, rgb(52, 152, 219), rgb(44, 62, 80));
+      font-family: 'Arial', sans-serif;
+      text-align: center;
+      color: #ecf0f1;
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #password-container {
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      animation: fadeIn 1s ease-in-out;
+      position: relative;
+      z-index: 2;
+    }
+
+    .animated-text {
+      font-size: 24px;
+      position: relative;
+      display: inline-block;
+      -webkit-animation: typing 2s;
+      -moz-animation: typing 2s;
+      animation: typing 2s;
+    }
+
+    @keyframes typing {
+      from {
+        width: 0;
+      }
+
+      to {
+        width: 100%;
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    .fire-container {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .fire {
+      position: absolute;
+      height: 100%;
+      width: 50px;
+      background: linear-gradient(to bottom, rgb(255, 0, 0), rgb(255, 165, 0)); /* Fiery color gradient */
+      top: 0;
+      left: -50px;
+      animation: fireAnimation 0.5s infinite linear alternate-reverse;
+    }
+
+    .fire.right {
+      left: auto;
+      right: -50px;
+      -webkit-transform: scaleX(-1);
+      transform: scaleX(-1);
+    }
+
+    @keyframes fireAnimation {
+      from {
+        transform: translateY(0);
+      }
+
+      to {
+        transform: translateY(-5px);
+      }
+    }
+
+    #copy-btn, #download-btn, #generate-btn, #change-btn {
+      display: inline-block;
+      padding: 10px 20px;
+      margin: 10px;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      color: #ecf0f1;
+    }
+
+    #copy-btn {
+      background-color: #2ecc71;
+    }
+
+    #download-btn {
+      background-color: #3498db;
+    }
+
+    #generate-btn {
+      background-color: #f39c12;
+    }
+
+    #change-btn {
+      background-color: #e74c3c;
+    }
+  </style>
+</head>
+<body>
+  <div class="fire-container">
+    <div class="fire"></div>
+    <div class="fire right"></div>
+  </div>
+
+  <div id="password-container">
+    <h1>Password Page</h1>
+    <hr>
+    <h2>Password: <span class="animated-text" id="dynamicPassword"></span></h2>
+    <button id="copy-btn" onclick="copyPassword()">Copy Password</button>
+    <button id="download-btn" onclick="downloadPassword()">Download Password</button>
+    <button id="generate-btn" onclick="generatePassword()">Generate Password</button>
+    <button id="change-btn" onclick="changePassword()">Change Password</button>
+  </div>
+
+  <script>
+    fetch('https://yudamods.github.io/pass.txt')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.text();
+      })
+      .then(password => {
+        document.getElementById('dynamicPassword').innerText = password;
+      })
+      .catch(error => console.error('Error fetching password:', error));
+
+    function copyPassword() {
+      const passwordElement = document.getElementById('dynamicPassword');
+      const passwordText = passwordElement.innerText;
+
+      const textarea = document.createElement('textarea');
+      textarea.value = passwordText;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+
+      alert('Password copied to clipboard!');
+    }
+
+    function downloadPassword() {
+      const password = document.getElementById('dynamicPassword').innerText;
+      const blob = new Blob([password], { type: 'text/plain' });
+      const link = document.createElement('a');
+      link.href = window.URL.createObjectURL(blob);
+      link.download = 'password.txt';
+      link.click();
+    }
+
+    function generatePassword() {
+      const generatedPassword = generateRandomPassword();
+      savePassword(generatedPassword);
+      document.getElementById('dynamicPassword').innerText = generatedPassword;
+      alert('Password generated and saved!');
+    }
+
+    function changePassword() {
+      const newPassword = prompt('Enter the new password (6 digits):');
+      if (newPassword !== null && newPassword.match(/^\d{6}$/)) {
+        savePassword(newPassword);
+        document.getElementById('dynamicPassword').innerText = newPassword;
+        alert('Password changed and saved!');
+      } else {
+        alert('Invalid password format. Please enter 6 digits.');
+      }
+    }
+
+    function generateRandomPassword() {
+      return Math.floor(Math.random() * 900000) + 100000;
+    }
+
+    function savePassword(password) {
+      fetch('pass.txt', {
+        method: 'PUT',
+        body: password
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Failed to save password');
+          }
+        })
+        .catch(error => console.error('Error saving password:', error));
+    }
+  </script>
+</body>
+</html>

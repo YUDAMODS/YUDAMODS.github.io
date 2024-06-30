@@ -1,0 +1,1488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz Game</title>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    #quiz-container {
+      display: none;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      animation: fadeIn 0.5s ease-in-out;
+    }
+    #start-screen {
+      text-align: center;
+    }
+    #question-container {
+      display: none;
+    }
+    #question-container.show {
+      display: block;
+    }
+    .option-button {
+      display: block;
+      margin: 10px 0;
+      padding: 10px;
+      width: 100%;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .option-button:hover {
+      background-color: #0056b3;
+    }
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="start-screen">
+    <h1>Welcome to the Quiz YudaMods</h1>
+    <button id="start-button" class="option-button">Start Quiz</button>
+  </div>
+  <div id="quiz-container">
+    <div id="question-container">
+      <h2 id="question"></h2>
+      <div id="options"></div>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        question: 'Apa ibu kota Indonesia?',
+        options: ['Jakarta', 'Surabaya', 'Bandung', 'Semarang'],
+        answer: 'Jakarta'
+      },
+      {
+        question: 'Siapakah presiden pertama Republik Indonesia?',
+        options: ['Soekarno', 'Soeharto', 'BJ Habibie', 'Gus Dur'],
+        answer: 'Soekarno'
+      },
+      {
+        question: 'Berapakah jumlah provinsi di Indonesia?',
+        options: ['28', '30', '32', '34'],
+        answer: '34'
+      },
+      {
+        question: 'Siapakah penulis novel "Laskar Pelangi"?',
+        options: ['Andrea Hirata', 'Tere Liye', 'Dee Lestari', 'Dewi Lestari'],
+        answer: 'Andrea Hirata'
+      },
+      {
+        question: 'Kota manakah yang terkenal dengan Festival Budayanya di Indonesia?',
+        options: ['Yogyakarta', 'Bali', 'Surabaya', 'Makassar'],
+        answer: 'Bali'
+      },
+      {
+        question: 'Siapakah presiden ke-3 Republik Indonesia?',
+        options: ['Abdurrahman Wahid', 'Megawati Soekarnoputri', 'Susilo Bambang Yudhoyono', 'Joko Widodo'],
+        answer: 'Abdurrahman Wahid'
+      },
+      {
+        question: 'Apa mata uang resmi Indonesia?',
+        options: ['Rupiah', 'Dolar', 'Euro', 'Poundsterling'],
+        answer: 'Rupiah'
+      },
+      {
+        question: 'Kota manakah yang dikenal sebagai kota pelajar di Indonesia?',
+        options: ['Bandung', 'Malang', 'Yogyakarta', 'Surabaya'],
+        answer: 'Yogyakarta'
+      },
+      {
+        question: 'Siapakah tokoh yang memproklamirkan kemerdekaan Indonesia?',
+        options: ['Soekarno dan Hatta', 'Megawati dan Gus Dur', 'Jokowi dan Prabowo', 'SBY dan JK'],
+        answer: 'Soekarno dan Hatta'
+      },
+      {
+        question: 'Apa nama provinsi terbesar di Indonesia?',
+        options: ['Papua', 'Sumatera', 'Kalimantan', 'Jawa'],
+        answer: 'Papua'
+      },
+      {
+        question: 'Siapakah penulis novel "Pramoedya Ananta Toer"?',
+        options: ['Rendra', 'Ananta', 'Pram', 'Toer'],
+        answer: 'Ananta'
+      },
+      {
+        question: 'Berapakah jumlah kepulauan di Indonesia?',
+        options: ['17.000', '15.000', '14.000', '16.000'],
+        answer: '17.000'
+      },
+      {
+        question: 'Kota manakah yang dikenal dengan batu karangnya?',
+        options: ['Manado', 'Lombok', 'Bali', 'Makassar'],
+        answer: 'Bali'
+      },
+      {
+        question: 'Berapakah jumlah bahasa daerah di Indonesia?',
+        options: ['700', '600', '650', '800'],
+        answer: '700'
+      },
+      {
+        question: 'Siapakah penemu bunga bakung di Indonesia?',
+        options: ['Lamhot Manurung', 'Lamhot', 'Manurung', 'Lamhot Manurung'],
+        answer: 'Lamhot Manurung'
+      },
+      {
+        question: 'Apa mata uang baru di Indonesia?',
+        options: ['Rupiah', 'Dolar', 'Euro', 'Poundsterling'],
+        answer: 'Rupiah'
+      },
+      {
+        question: 'Siapakah tokoh yang memproklamirkan bunga di Indonesia?',
+        options: ['Soekarno dan Hatta', 'Megawati dan Gus Dur', 'Jokowi dan Prabowo', 'SBY dan JK'],
+        answer: 'Soekarno dan Hatta'
+      },
+      {
+        question: 'Siapakah penulis buku "Bumi Manusia"?',
+        options: ['Pramoedya Ananta Toer', 'Andrea Hirata', 'Tere Liye', 'Dee Lestari'],
+        answer: 'Pramoedya Ananta Toer'
+      },
+      {
+        question: 'Apa nama hewan nasional Indonesia?',
+        options: ['Harimau', 'Gajah', 'Komodo', 'Badak'],
+        answer: 'Komodo'
+      },
+      {
+        question: 'Siapakah pahlawan nasional yang terkenal sebagai "Bapak Pendidikan Nasional"?',
+        options: ['Ki Hajar Dewantara', 'Soekarno', 'Mohammad Hatta', 'Cut Nyak Dien'],
+        answer: 'Ki Hajar Dewantara'
+      },
+      {
+        question: 'Berapakah jumlah pulau yang diakui oleh PBB sebagai bagian dari wilayah Indonesia?',
+        options: ['17.504', '16.056', '18.307', '15.128'],
+        answer: '17.504'
+      },
+      {
+        question: 'Apa nama alat musik tradisional dari Kalimantan?',
+        options: ['Sasando', 'Angklung', 'Gamelan', 'Sape'],
+        answer: 'Sape'
+      },
+      {
+        question: 'Siapakah tokoh Indonesia yang mendapat gelar pahlawan nasional setelah meninggal dunia pada tahun 2009?',
+        options: ['Gus Dur', 'Soekarno', 'Hatta', 'Sudirman'],
+        answer: 'Gus Dur'
+      },
+      {
+        question: 'Berapakah jumlah anggota Dewan Perwakilan Rakyat (DPR) Indonesia?',
+        options: ['560', '575', '580', '585'],
+        answer: '575'
+      },
+      {
+        question: 'Apa nama kapal Indonesia yang pertama kali mengelilingi dunia?',
+        options: ['Makassar', 'Sunda', 'Maluku', 'Flores'],
+                answer: 'Makassar'
+      },
+      {
+        question: 'Apa nama candi Buddha terbesar di Indonesia?',
+        options: ['Borobudur', 'Prambanan', 'Mendut', 'Sewu'],
+        answer: 'Borobudur'
+      },
+      {
+        question: 'Siapakah penulis novel "Ayat-ayat Cinta"?',
+        options: ['Habiburrahman El Shirazy', 'Andrea Hirata', 'Tere Liye', 'Dee Lestari'],
+        answer: 'Habiburrahman El Shirazy'
+      },
+      {
+        question: 'Berapakah jumlah anggota Dewan Perwakilan Daerah (DPD) Indonesia?',
+        options: ['132', '136', '140', '144'],
+        answer: '136'
+      },
+      {
+        question: 'Apa nama gunung tertinggi di Indonesia?',
+        options: ['Gunung Rinjani', 'Gunung Semeru', 'Gunung Kerinci', 'Puncak Jaya'],
+        answer: 'Puncak Jaya'
+      },
+      {
+        question: 'Siapakah tokoh yang dijuluki "Bapak Pembangunan Indonesia"?',
+        options: ['Soeharto', 'Soekarno', 'BJ Habibie', 'Gus Dur'],
+        answer: 'Soeharto'
+      },
+      {
+        question: 'Kota manakah yang dikenal sebagai "Kota Kembang"?',
+        options: ['Bandung', 'Bogor', 'Surabaya', 'Semarang'],
+        answer: 'Bandung'
+      },
+      {
+        question: 'Apa nama tarian tradisional dari Bali?',
+        options: ['Tari Pendet', 'Tari Jaipong', 'Tari Saman', 'Tari Serimpi'],
+        answer: 'Tari Pendet'
+      },
+      {
+        question: 'Siapakah tokoh yang mendapat gelar "Pahlawan Proklamator"?',
+        options: ['Soekarno dan Hatta', 'Sudirman dan Gatot Subroto', 'RA Kartini dan Cut Nyak Dien', 'Diponegoro dan Pattimura'],
+        answer: 'Soekarno dan Hatta'
+      },
+      {
+        question: 'Apa nama alat musik tradisional dari Sulawesi Selatan?',
+        options: ['Kolintang', 'Sasando', 'Kecapi', 'Talempong'],
+        answer: 'Kecapi'
+      },
+      {
+        question: 'Kapan Indonesia memproklamasikan kemerdekaannya?',
+        options: ['17 Agustus 1945', '20 Mei 1908', '28 Oktober 1928', '1 Juni 1945'],
+        answer: '17 Agustus 1945'
+      },
+      {
+        question: 'Siapakah presiden ke-4 Republik Indonesia?',
+        options: ['Gus Dur', 'Megawati Soekarnoputri', 'Susilo Bambang Yudhoyono', 'Joko Widodo'],
+        answer: 'Gus Dur'
+      },
+      {
+        question: 'Apa nama hutan tropis terbesar di Indonesia?',
+        options: ['Hutan Kalimantan', 'Hutan Papua', 'Hutan Sumatera', 'Hutan Jawa'],
+        answer: 'Hutan Kalimantan'
+      },
+      {
+        question: 'Siapakah tokoh yang dikenal sebagai "Bapak Pandu Indonesia"?',
+        options: ['Sri Sultan Hamengkubuwono IX', 'Jenderal Sudirman', 'Ki Hajar Dewantara', 'Mohammad Hatta'],
+        answer: 'Sri Sultan Hamengkubuwono IX'
+      },
+      {
+        question: 'Apa nama stadion sepak bola terbesar di Indonesia?',
+        options: ['Stadion Utama Gelora Bung Karno', 'Stadion Si Jalak Harupat', 'Stadion Gelora Sriwijaya', 'Stadion Mandala'],
+        answer: 'Stadion Utama Gelora Bung Karno'
+      },
+      {
+        question: 'Siapakah penulis novel "Supernova"?',
+        options: ['Dewi Lestari', 'Andrea Hirata', 'Tere Liye', 'Habiburrahman El Shirazy'],
+        answer: 'Dewi Lestari'
+      },
+      {
+        question: 'Apa nama provinsi yang berada di ujung paling timur Indonesia?',
+        options: ['Papua', 'Maluku', 'Sulawesi Utara', 'Nusa Tenggara Timur'],
+        answer: 'Papua'
+      },
+      {
+        question: 'Siapakah penyair yang dikenal dengan karya "Aku"?',
+        options: ['Chairil Anwar', 'W.S. Rendra', 'Taufik Ismail', 'Sapardi Djoko Damono'],
+        answer: 'Chairil Anwar'
+      },
+      {
+        question: 'Berapakah jumlah anggota Majelis Permusyawaratan Rakyat (MPR) Indonesia?',
+        options: ['575', '711', '736', '775'],
+        answer: '711'
+      },
+      {
+        question: 'Apa nama makanan khas Padang yang terbuat dari daging sapi dengan bumbu rempah?',
+        options: ['Rendang', 'Sate Padang', 'Gulai', 'Asam Padeh'],
+        answer: 'Rendang'
+      },
+      {
+        question: 'Siapakah pahlawan nasional yang berasal dari Aceh dan dikenal dengan sebutan "Cut"?',
+        options: ['Cut Nyak Dien', 'Cut Meutia', 'Cut Nyak Dhien', 'Cut Nyak Meutia'],
+        answer: 'Cut Nyak Dien'
+      },
+      {
+        question: 'Kota manakah yang dikenal dengan sebutan "Kota Hujan"?',
+        options: ['Bogor', 'Bandung', 'Jakarta', 'Surabaya'],
+        answer: 'Bogor'
+      },
+      {
+        question: 'Apa nama tari perang tradisional dari Papua?',
+        options: ['Tari Cakalele', 'Tari Yospan', 'Tari Tifa', 'Tari Sajojo'],
+        answer: 'Tari Yospan'
+      },
+      {
+        question: 'Berapakah jumlah provinsi di Pulau Sumatera?',
+        options: ['10', '8', '12', '11'],
+        answer: '10'
+      },
+      {
+        question: 'Siapakah presiden ke-7 Republik Indonesia?',
+        options: ['Joko Widodo', 'Susilo Bambang Yudhoyono', 'Megawati Soekarnoputri', 'Gus Dur'],
+        answer: 'Joko Widodo'
+      },
+      {
+        question: 'Apa nama candi Hindu terbesar di Indonesia?',
+        options: ['Prambanan', 'Borobudur', 'Sewu', 'Plaosan'],
+        answer: 'Prambanan'
+      },
+      {
+        question: 'Siapakah penulis buku "Laut Bercerita"?',
+        options: ['Leila S. Chudori', 'Dee Lestari', 'Andrea Hirata', 'Tere Liye'],
+        answer: 'Leila S. Chudori'
+      },
+      {
+        question: 'Berapakah jumlah bahasa resmi yang diakui oleh pemerintah Indonesia?',
+        options: ['1', '2', '3', '4'],
+        answer: '1'
+      },
+      {
+        question: 'Kota manakah yang dikenal sebagai "Kota Pelajar"?',
+        options: ['Yogyakarta', 'Bandung', 'Malang', 'Jakarta'],
+        answer: 'Yogyakarta'
+      },
+      {
+        question: 'Apa nama hewan yang menjadi simbol Provinsi Kalimantan Timur?',
+        options: ['Orangutan', 'Bekantan', 'Kucing Merah', 'Gajah'],
+        answer: 'Orangutan'
+      },
+      {
+        question: 'Siapakah penulis novel "Ayat-ayat Cinta 2"?',
+        options: ['Habiburrahman El Shirazy', 'Andrea Hirata', 'Tere Liye', 'Dee Lestari'],
+        answer: 'Habiburrahman El Shirazy'
+      },
+      {
+        question: 'Berapakah jumlah anggota Dewan Perwakilan Rakyat Daerah (DPRD) Kabupaten/Kota?',
+        options: ['20-50', '25-55', '30-60', '35-65'],
+        answer: '20-50'
+      },
+      {
+        question: 'Apa nama pulau terbesar di Indonesia?',
+        options: ['Kalimantan', 'Sumatera', 'Papua', 'Jawa'],
+        answer: 'Kalimantan'
+      },
+      {
+        question: 'Siapakah presiden ke-6 Republik Indonesia?',
+        options: ['Susilo Bambang Yudhoyono', 'Megawati Soekarnoputri', 'Gus Dur', 'Joko Widodo'],
+        answer: 'Susilo Bambang Yudhoyono'
+      },
+      {
+        question: 'Apa nama ibukota provinsi Sumatera Barat?',
+        options: ['Padang', 'Pekanbaru', 'Medan', 'Jambi'],
+        answer: 'Padang'
+      },
+      {
+        question: 'Siapakah penulis novel "Dilan: Dia adalah Dilanku Tahun 1990"?',
+        options: ['Pidi Baiq', 'Tere Liye', 'Andrea Hirata', 'Dee Lestari'],
+        answer: 'Pidi Baiq'
+      },
+      {
+                question: 'Siapakah penulis novel "Dilan: Dia adalah Dilanku Tahun 1990"?',
+        options: ['Pidi Baiq', 'Tere Liye', 'Andrea Hirata', 'Dee Lestari'],
+        answer: 'Pidi Baiq'
+      },
+      {
+        question: 'Berapakah jumlah kabupaten dan kota di Indonesia?',
+        options: ['514', '508', '512', '516'],
+        answer: '514'
+      },
+      {
+        question: 'Apa nama gunung tertinggi di Pulau Jawa?',
+        options: ['Gunung Semeru', 'Gunung Merapi', 'Gunung Slamet', 'Gunung Rinjani'],
+        answer: 'Gunung Semeru'
+      },
+      {
+        question: 'Siapakah pahlawan nasional yang dikenal sebagai "Pangeran Diponegoro"?',
+        options: ['Diponegoro', 'Gajah Mada', 'Pattimura', 'Sudirman'],
+        answer: 'Diponegoro'
+      },
+      {
+        question: 'Kota manakah yang dikenal dengan sebutan "Kota Pahlawan"?',
+        options: ['Surabaya', 'Jakarta', 'Bandung', 'Semarang'],
+        answer: 'Surabaya'
+      },
+      {
+        question: 'Apa nama candi terbesar di Indonesia?',
+        options: ['Borobudur', 'Prambanan', 'Mendut', 'Sewu'],
+        answer: 'Borobudur'
+      },
+      {
+        question: 'Siapakah presiden ke-2 Republik Indonesia?',
+        options: ['Soeharto', 'Soekarno', 'BJ Habibie', 'Gus Dur'],
+        answer: 'Soeharto'
+      },
+      {
+        question: 'Berapakah jumlah suku bangsa di Indonesia?',
+        options: ['300', '700', '1000', '1300'],
+        answer: '1300'
+      },
+      {
+        question: 'Apa nama provinsi yang beribukota di Makassar?',
+        options: ['Sulawesi Selatan', 'Sulawesi Utara', 'Sulawesi Tengah', 'Sulawesi Tenggara'],
+        answer: 'Sulawesi Selatan'
+      },
+      {
+        question: 'Siapakah penulis buku "Bumi"?',
+        options: ['Tere Liye', 'Andrea Hirata', 'Habiburrahman El Shirazy', 'Dee Lestari'],
+        answer: 'Tere Liye'
+      },
+      {
+        question: 'Apa nama tari tradisional dari Aceh?',
+        options: ['Tari Saman', 'Tari Jaipong', 'Tari Pendet', 'Tari Kecak'],
+        answer: 'Tari Saman'
+      },
+      {
+        question: 'Siapakah pahlawan nasional yang berasal dari Sulawesi Utara?',
+        options: ['Sam Ratulangi', 'Pattimura', 'Diponegoro', 'Sudirman'],
+        answer: 'Sam Ratulangi'
+      },
+      {
+        question: 'Kota manakah yang dikenal dengan sebutan "Kota Apel"?',
+        options: ['Malang', 'Bogor', 'Bandung', 'Semarang'],
+        answer: 'Malang'
+      },
+      {
+        question: 'Apa nama lagu kebangsaan Indonesia?',
+        options: ['Indonesia Raya', 'Bagimu Negeri', 'Satu Nusa Satu Bangsa', 'Tanah Airku'],
+        answer: 'Indonesia Raya'
+      },
+      {
+        question: 'Siapakah penulis novel "Perahu Kertas"?',
+        options: ['Dee Lestari', 'Andrea Hirata', 'Habiburrahman El Shirazy', 'Tere Liye'],
+        answer: 'Dee Lestari'
+      },
+      {
+        question: 'Berapakah jumlah pulau besar di Indonesia?',
+        options: ['5', '6', '7', '8'],
+        answer: '5'
+      },
+      {
+        question: 'Apa nama gunung berapi yang meletus pada tahun 1883 dan menyebabkan tsunami besar?',
+        options: ['Gunung Krakatau', 'Gunung Merapi', 'Gunung Tambora', 'Gunung Bromo'],
+        answer: 'Gunung Krakatau'
+      },
+      {
+        question: 'Siapakah pahlawan nasional wanita yang berasal dari Jepara dan dikenal dengan perjuangannya untuk pendidikan wanita?',
+        options: ['RA Kartini', 'Dewi Sartika', 'Cut Nyak Dien', 'Martha Christina Tiahahu'],
+        answer: 'RA Kartini'
+      },
+      {
+        question: 'Kota manakah yang dikenal sebagai "Kota Batik"?',
+        options: ['Solo', 'Pekalongan', 'Yogyakarta', 'Cirebon'],
+        answer: 'Solo'
+      },
+      {
+        question: 'Apa nama tarian tradisional dari Sumatera Barat?',
+        options: ['Tari Piring', 'Tari Saman', 'Tari Pendet', 'Tari Kecak'],
+        answer: 'Tari Piring'
+      },
+      {
+        question: 'Siapakah penulis novel "Laskar Pelangi"?',
+        options: ['Andrea Hirata', 'Tere Liye', 'Dee Lestari', 'Habiburrahman El Shirazy'],
+        answer: 'Andrea Hirata'
+      },
+      {
+        question: 'Berapakah jumlah kementerian di Indonesia?',
+        options: ['34', '32', '36', '38'],
+        answer: '34'
+      },
+      {
+        question: 'Apa nama makanan khas Sunda yang terbuat dari beras ketan dan kelapa parut?',
+        options: ['Nasi Timbel', 'Ketan', 'Gemblong', 'Lemper'],
+        answer: 'Gemblong'
+      },
+      {
+        question: 'Siapakah pahlawan nasional yang dikenal dengan sebutan "Bapak TNI"?',
+        options: ['Jenderal Sudirman', 'Gatot Subroto', 'AH Nasution', 'Soedirman'],
+        answer: 'Jenderal Sudirman'
+      },
+      {
+        question: 'Kota manakah yang dikenal sebagai "Kota Seribu Sungai"?',
+        options: ['Banjarmasin', 'Pontianak', 'Palembang', 'Samarinda'],
+        answer: 'Banjarmasin'
+      },
+      {
+        question: 'Apa nama tarian perang tradisional dari Sulawesi Utara?',
+        options: ['Tari Cakalele', 'Tari Yospan', 'Tari Kecak', 'Tari Saman'],
+        answer: 'Tari Cakalele'
+      },
+      {
+        question: 'Siapakah presiden ke-5 Republik Indonesia?',
+        options: ['Megawati Soekarnoputri', 'Susilo Bambang Yudhoyono', 'Gus Dur', 'Joko Widodo'],
+        answer: 'Megawati Soekarnoputri'
+      },
+      {
+        question: 'Apa nama gunung tertinggi di Pulau Sumatera?',
+        options: ['Gunung Kerinci', 'Gunung Leuser', 'Gunung Sinabung', 'Gunung Sibayak'],
+        answer: 'Gunung Kerinci'
+      },
+      {
+        question: 'Siapakah penulis novel "Pulang"?',
+        options: ['Leila S. Chudori', 'Dee Lestari', 'Andrea Hirata', 'Tere Liye'],
+        answer: 'Leila S. Chudori'
+      },
+      {
+        question: 'Berapakah jumlah provinsi di Pulau Kalimantan?',
+        options: ['5', '4', '6', '3'],
+        answer: '5'
+      },
+      {
+        question: 'Apa nama ibu kota provinsi Papua Barat?',
+        options: ['Manokwari', 'Jayapura', 'Sorong', 'Biak'],
+        answer: 'Manokwari'
+      },
+      {
+        question: 'Siapakah presiden Indonesia yang menjabat selama 31 tahun?',
+        options: ['Soeharto', 'Soekarno', 'BJ Habibie', 'Gus Dur'],
+        answer: 'Soeharto'
+      },
+      {
+        question: 'Apa nama suku asli dari Pulau Bali?',
+        options: ['Suku Bali Aga', 'Suku Batak', 'Suku Dayak', 'Suku Jawa'],
+        answer: 'Suku Bali Aga'
+      },
+      {
+        question: 'Siapakah penulis novel "Kambing Jantan"?',
+        options: ['Raditya Dika', 'Pidi Baiq', 'Andrea Hirata', 'Tere Liye'],
+        answer: 'Raditya Dika'
+      },
+      {
+        question: 'Apa nama sungai terpanjang di Indonesia?',
+        options: ['Sungai Kapuas', 'Sungai Mahakam', 'Sungai Musi', 'Sungai Bengawan Solo'],
+        answer: 'Sungai Kapuas'
+      },
+      {
+        question: 'Siapakah penulis novel "Orang-orang Biasa"?',
+        options: ['Andrea Hirata', 'Dee Lestari', 'Tere Liye', 'Leila S. Chudori'],
+        answer: 'Andrea Hirata'
+      },
+      {
+                question: 'Apa nama alat musik tradisional dari Riau?',
+        options: ['Gong', 'Rebab', 'Angklung', 'Gambus'],
+        answer: 'Rebab'
+      },
+      {
+        question: 'Siapakah penulis buku "Sang Pemimpi"?',
+        options: ['Andrea Hirata', 'Tere Liye', 'Habiburrahman El Shirazy', 'Dee Lestari'],
+        answer: 'Andrea Hirata'
+      },
+      {
+        question: 'Apa nama provinsi yang terletak di Pulau Madura?',
+        options: ['Jawa Timur', 'Jawa Tengah', 'Bali', 'Nusa Tenggara Barat'],
+        answer: 'Jawa Timur'
+      },
+      {
+        question: 'Siapakah pahlawan nasional yang berasal dari Nusa Tenggara Timur?',
+        options: ['Frans Seda', 'Sam Ratulangi', 'Patimura', 'Jenderal Sudirman'],
+        answer: 'Frans Seda'
+      },
+      {
+        question: 'Apa nama ibu kota provinsi Kalimantan Barat?',
+        options: ['Pontianak', 'Samarinda', 'Banjarmasin', 'Balikpapan'],
+        answer: 'Pontianak'
+      },
+      {
+        question: 'Siapakah penulis novel "Gadis Kretek"?',
+        options: ['Ratih Kumala', 'Leila S. Chudori', 'Andrea Hirata', 'Dee Lestari'],
+        answer: 'Ratih Kumala'
+      },
+      {
+        question: 'Berapakah jumlah suku bangsa di Papua?',
+        options: ['250', '275', '300', '350'],
+        answer: '275'
+      },
+      {
+        question: 'Apa nama alat musik tradisional dari Bali?',
+        options: ['Gamelan', 'Angklung', 'Kolintang', 'Sasando'],
+        answer: 'Gamelan'
+      },
+      {
+        question: 'Siapakah penulis buku "Ronggeng Dukuh Paruk"?',
+        options: ['Ahmad Tohari', 'Pramoedya Ananta Toer', 'Tere Liye', 'Andrea Hirata'],
+        answer: 'Ahmad Tohari'
+      },
+      {
+        question: 'Kota manakah yang dikenal sebagai "Kota Pelajar"?',
+        options: ['Yogyakarta', 'Bandung', 'Jakarta', 'Surabaya'],
+        answer: 'Yogyakarta'
+      },
+      {
+        question: 'Apa nama tarian tradisional dari Betawi?',
+        options: ['Tari Topeng', 'Tari Jaipong', 'Tari Pendet', 'Tari Kecak'],
+        answer: 'Tari Topeng'
+      },
+      {
+        question: 'Siapakah penulis buku "Cantik Itu Luka"?',
+        options: ['Eka Kurniawan', 'Andrea Hirata', 'Tere Liye', 'Habiburrahman El Shirazy'],
+        answer: 'Eka Kurniawan'
+      },
+      {
+        question: 'Apa nama makanan khas Palembang yang terbuat dari ikan?',
+        options: ['Pempek', 'Gulai', 'Sate', 'Rendang'],
+        answer: 'Pempek'
+      },
+      {
+        question: 'Siapakah penulis novel "Saman"?',
+        options: ['Ayu Utami', 'Leila S. Chudori', 'Dee Lestari', 'Andrea Hirata'],
+        answer: 'Ayu Utami'
+      },
+      {
+        question: 'Apa nama suku asli dari Pulau Lombok?',
+        options: ['Suku Sasak', 'Suku Baduy', 'Suku Asmat', 'Suku Batak'],
+        answer: 'Suku Sasak'
+      },
+      {
+        question: 'Siapakah penulis novel "Moga Bunda Disayang Allah"?',
+        options: ['Tere Liye', 'Andrea Hirata', 'Habiburrahman El Shirazy', 'Dee Lestari'],
+        answer: 'Tere Liye'
+      },
+      {
+        question: 'Apa nama gunung berapi yang terkenal di Jawa Tengah?',
+        options: ['Gunung Merapi', 'Gunung Semeru', 'Gunung Bromo', 'Gunung Rinjani'],
+        answer: 'Gunung Merapi'
+      },
+      {
+        question: 'Siapakah pahlawan nasional yang dikenal dengan sebutan "Cut" dari Aceh?',
+        options: ['Cut Nyak Dien', 'Cut Meutia', 'Cut Nyak Dhien', 'Cut Nyak Meutia'],
+        answer: 'Cut Nyak Dien'
+      },
+      {
+        question: 'Kota manakah yang dikenal sebagai "Kota Hujan"?',
+        options: ['Bogor', 'Bandung', 'Jakarta', 'Surabaya'],
+        answer: 'Bogor'
+      },
+      {
+        question: 'Apa nama tarian tradisional dari Sumatera Barat?',
+        options: ['Tari Piring', 'Tari Saman', 'Tari Pendet', 'Tari Kecak'],
+        answer: 'Tari Piring'
+      },
+      {
+        question: 'Siapakah penulis buku "Bumi Manusia"?',
+        options: ['Pramoedya Ananta Toer', 'Tere Liye', 'Andrea Hirata', 'Habiburrahman El Shirazy'],
+        answer: 'Pramoedya Ananta Toer'
+      },
+      {
+        question: 'Apa nama lagu kebangsaan Indonesia?',
+        options: ['Indonesia Raya', 'Bagimu Negeri', 'Satu Nusa Satu Bangsa', 'Tanah Airku'],
+        answer: 'Indonesia Raya'
+      },
+      {
+        question: 'Siapakah presiden ke-7 Republik Indonesia?',
+        options: ['Joko Widodo', 'Susilo Bambang Yudhoyono', 'Megawati Soekarnoputri', 'Gus Dur'],
+        answer: 'Joko Widodo'
+      },
+      {
+        question: 'Apa nama pulau terbesar di Indonesia?',
+        options: ['Kalimantan', 'Sumatera', 'Papua', 'Jawa'],
+        answer: 'Kalimantan'
+      },
+      {
+        question: 'Siapakah presiden ke-3 Republik Indonesia?',
+        options: ['BJ Habibie', 'Soeharto', 'Soekarno', 'Gus Dur'],
+        answer: 'BJ Habibie'
+      },
+      {
+        question: 'Apa nama suku asli dari Papua?',
+        options: ['Suku Asmat', 'Suku Batak', 'Suku Dayak', 'Suku Baduy'],
+        answer: 'Suku Asmat'
+      },
+      {
+        question: 'Siapakah penulis buku "Ayah"?',
+        options: ['Andrea Hirata', 'Tere Liye', 'Habiburrahman El Shirazy', 'Dee Lestari'],
+        answer: 'Andrea Hirata'
+      },
+      {
+        question: 'Apa nama gunung tertinggi di Indonesia?',
+        options: ['Puncak Jaya', 'Gunung Rinjani', 'Gunung Semeru', 'Gunung Kerinci'],
+        answer: 'Puncak Jaya'
+      },
+      {
+        question: 'Siapakah pahlawan nasional yang dikenal dengan nama "Pattimura"?',
+        options: ['Thomas Matulessy', 'Sam Ratulangi', 'Diponegoro', 'Sudirman'],
+        answer: 'Thomas Matulessy'
+      },
+      {
+        question: 'Kota manakah yang dikenal sebagai "Kota Seribu Sungai"?',
+        options: ['Banjarmasin', 'Pontianak', 'Palembang', 'Samarinda'],
+        answer: 'Banjarmasin'
+      },
+      {
+        question: 'Apa nama tarian perang tradisional dari Papua?',
+        options: ['Tari Yospan', 'Tari Cakalele', 'Tari Kecak', 'Tari Saman'],
+        answer: 'Tari Yospan'
+      },
+      {
+        question: 'Siapakah penulis novel "Hujan"?',
+        options: ['Tere Liye', 'Andrea Hirata', 'Dee Lestari', 'Habiburrahman El Shirazy'],
+        answer: 'Tere Liye'
+      },
+      {
+        question: 'Berapakah jumlah provinsi di Pulau Jawa?',
+        options: ['6', '5', '4', '7'],
+        answer: '6'
+      },
+      {
+        question: 'Apa nama ibu kota provinsi Jawa Timur?',
+        options: ['Surabaya', 'Malang', 'Semarang', 'Bandung'],
+        answer: 'Surabaya'
+      },
+      {
+        question: 'Siapakah presiden ke-4 Republik Indonesia?',
+        options: ['Gus Dur', 'Megawati Soekarnoputri', 'Susilo Bambang Yudhoyono', 'Joko Widodo'],
+        answer: 'Gus Dur'
+      },
+      {
+        question: 'Apa nama makanan khas Padang yang terbuat dari daging sapi dengan bumbu rempah?',
+        options: ['Rendang', 'Sate Padang', 'Gulai', 'Asam Padeh'],
+        answer: 'Rendang'
+      },
+      {
+                question: 'Siapakah penulis novel "Rindu"?',
+        options: ['Tere Liye', 'Andrea Hirata', 'Dee Lestari', 'Habiburrahman El Shirazy'],
+        answer: 'Tere Liye'
+      },
+      {
+        question: 'Apa nama provinsi yang beribukota di Palembang?',
+        options: ['Sumatera Selatan', 'Sumatera Barat', 'Sumatera Utara', 'Riau'],
+        answer: 'Sumatera Selatan'
+      },
+      {
+        question: 'Siapakah pahlawan nasional yang dikenal dengan nama "Cut Meutia"?',
+        options: ['Cut Meutia', 'Cut Nyak Dien', 'Martha Christina Tiahahu', 'Dewi Sartika'],
+        answer: 'Cut Meutia'
+      },
+      {
+        question: 'Kota manakah yang dikenal sebagai "Kota Gudeg"?',
+        options: ['Yogyakarta', 'Solo', 'Semarang', 'Surabaya'],
+        answer: 'Yogyakarta'
+      },
+      {
+        question: 'Apa nama tarian tradisional dari Sulawesi Selatan?',
+        options: ['Tari Paduppa', 'Tari Kecak', 'Tari Saman', 'Tari Jaipong'],
+        answer: 'Tari Paduppa'
+      },
+      {
+        question: 'Siapakah penulis buku "Lelaki Harimau"?',
+        options: ['Eka Kurniawan', 'Andrea Hirata', 'Tere Liye', 'Habiburrahman El Shirazy'],
+        answer: 'Eka Kurniawan'
+      },
+      {
+        question: 'Apa nama makanan khas Sunda yang terbuat dari singkong parut dan kelapa?',
+        options: ['Combro', 'Gemblong', 'Misro', 'Lemper'],
+        answer: 'Combro'
+      },
+      {
+        question: 'Siapakah pahlawan nasional yang dikenal dengan nama "Gatot Subroto"?',
+        options: ['Gatot Subroto', 'Jenderal Sudirman', 'AH Nasution', 'Soedirman'],
+        answer: 'Gatot Subroto'
+      },
+      {
+        question: 'Kota manakah yang dikenal sebagai "Kota Anging Mammiri"?',
+        options: ['Makassar', 'Manado', 'Ambon', 'Kupang'],
+        answer: 'Makassar'
+      },
+      {
+        question: 'Apa nama alat musik tradisional dari Nusa Tenggara Timur?',
+        options: ['Sasando', 'Gamelan', 'Kolintang', 'Angklung'],
+        answer: 'Sasando'
+      },
+      {
+        question: 'Siapakah penulis novel "Amba"?',
+        options: ['Laksmi Pamuntjak', 'Eka Kurniawan', 'Dee Lestari', 'Andrea Hirata'],
+        answer: 'Laksmi Pamuntjak'
+      },
+      {
+        question: 'Apa nama suku asli dari Kalimantan?',
+        options: ['Suku Dayak', 'Suku Batak', 'Suku Asmat', 'Suku Baduy'],
+        answer: 'Suku Dayak'
+      },
+      {
+        question: 'Siapakah penulis buku "Supernova"?',
+        options: ['Dee Lestari', 'Andrea Hirata', 'Tere Liye', 'Habiburrahman El Shirazy'],
+        answer: 'Dee Lestari'
+      },
+      {
+        question: 'Apa nama provinsi yang terletak di Pulau Sulawesi dan beribukota di Manado?',
+        options: ['Sulawesi Utara', 'Sulawesi Selatan', 'Sulawesi Tengah', 'Sulawesi Tenggara'],
+        answer: 'Sulawesi Utara'
+      },
+      {
+        question: 'Siapakah pahlawan nasional yang dikenal dengan nama "Sultan Hasanuddin"?',
+        options: ['Sultan Hasanuddin', 'Pattimura', 'Diponegoro', 'Sam Ratulangi'],
+        answer: 'Sultan Hasanuddin'
+      },
+      {
+        question: 'Apa nama ibu kota provinsi Maluku?',
+        options: ['Ambon', 'Ternate', 'Sorong', 'Manokwari'],
+        answer: 'Ambon'
+      },
+      {
+        question: 'Siapakah penulis novel "Lelaki Tua dan Laut"?',
+        options: ['Ernest Hemingway', 'Mark Twain', 'George Orwell', 'F. Scott Fitzgerald'],
+        answer: 'Ernest Hemingway'
+      },
+      {
+        question: 'Apa nama provinsi yang beribukota di Samarinda?',
+        options: ['Kalimantan Timur', 'Kalimantan Barat', 'Kalimantan Selatan', 'Kalimantan Tengah'],
+        answer: 'Kalimantan Timur'
+      },
+      {
+        question: 'Siapakah pahlawan nasional yang dikenal dengan nama "Sudirman"?',
+        options: ['Jenderal Sudirman', 'Gatot Subroto', 'AH Nasution', 'Soedirman'],
+        answer: 'Jenderal Sudirman'
+      },
+      {
+        question: 'Kota manakah yang dikenal sebagai "Kota Serambi Mekah"?',
+        options: ['Banda Aceh', 'Padang', 'Palembang', 'Medan'],
+        answer: 'Banda Aceh'
+      },
+      {
+        question: 'Apa nama alat musik tradisional dari Sumatera Barat?',
+        options: ['Saluang', 'Gong', 'Rebab', 'Angklung'],
+        answer: 'Saluang'
+      },
+      {
+        question: 'Siapakah penulis buku "Keluarga Cemara"?',
+        options: ['Arswendo Atmowiloto', 'Andrea Hirata', 'Tere Liye', 'Habiburrahman El Shirazy'],
+        answer: 'Arswendo Atmowiloto'
+      },
+      {
+        question: 'Apa nama suku asli dari Sulawesi Selatan?',
+        options: ['Suku Bugis', 'Suku Toraja', 'Suku Makassar', 'Suku Minahasa'],
+        answer: 'Suku Bugis'
+      },
+      {
+        question: 'Siapakah penulis novel "Maryamah Karpov"?',
+        options: ['Andrea Hirata', 'Tere Liye', 'Habiburrahman El Shirazy', 'Dee Lestari'],
+        answer: 'Andrea Hirata'
+      },
+      {
+        question: 'Apa nama provinsi yang beribukota di Denpasar?',
+        options: ['Bali', 'Jawa Tengah', 'Jawa Barat', 'Nusa Tenggara Barat'],
+        answer: 'Bali'
+      },
+      {
+        question: 'Siapakah penulis buku "Gadis Kretek"?',
+        options: ['Ratih Kumala', 'Andrea Hirata', 'Tere Liye', 'Dee Lestari'],
+        answer: 'Ratih Kumala'
+      },
+      {
+        question: 'Apa nama alat musik tradisional dari Sulawesi Utara?',
+        options: ['Kolintang', 'Angklung', 'Gamelan', 'Sasando'],
+        answer: 'Kolintang'
+      },
+      {
+        question: 'Siapakah pahlawan nasional yang dikenal dengan nama "Raden Ajeng Kartini"?',
+        options: ['RA Kartini', 'Dewi Sartika', 'Cut Nyak Dien', 'Martha Christina Tiahahu'],
+        answer: 'RA Kartini'
+      },
+      {
+        question: 'Kota manakah yang dikenal sebagai "Kota Seribu Masjid"?',
+        options: ['Lombok', 'Makassar', 'Medan', 'Surabaya'],
+        answer: 'Lombok'
+      },
+      {
+        question: 'Apa nama tarian tradisional dari Jawa Barat?',
+        options: ['Tari Jaipong', 'Tari Topeng', 'Tari Pendet', 'Tari Kecak'],
+        answer: 'Tari Jaipong'
+      },
+      {
+        question: 'Siapakah penulis buku "Sepatu Dahlan"?',
+        options: ['Khrisna Pabichara', 'Andrea Hirata', 'Tere Liye', 'Habiburrahman El Shirazy'],
+        answer: 'Khrisna Pabichara'
+      },
+      {
+        question: 'Apa nama provinsi yang beribukota di Bandung?',
+        options: ['Jawa Barat', 'Jawa Timur', 'Jawa Tengah', 'Banten'],
+        answer: 'Jawa Barat'
+      },
+      {
+        question: 'Siapakah pahlawan nasional yang dikenal dengan nama "Pattimura"?',
+        options: ['Thomas Matulessy', 'Sam Ratulangi', 'Diponegoro', 'Sudirman'],
+        answer: 'Thomas Matulessy'
+      },
+      {
+        question: 'Apa nama makanan khas Betawi yang terbuat dari daging sapi dan santan?',
+        options: ['Soto Betawi', 'Rendang', 'Gulai', 'Rawon'],
+        answer: 'Soto Betawi'
+      },
+      {
+        question: 'Siapakah penulis novel "Hujan Bulan Juni"?',
+        options: ['Sapardi Djoko Damono', 'Andrea Hirata', 'Tere Liye', 'Dee Lestari'],
+        answer: 'Sapardi Djoko Damono'
+      },
+      {
+        question: 'Apa nama ibu kota provinsi Banten?',
+                options: ['Serang', 'Cilegon', 'Tangerang', 'Pandeglang'],
+        answer: 'Serang'
+      },
+      {
+        question: 'Siapakah pahlawan nasional yang dikenal dengan nama "Pangeran Diponegoro"?',
+        options: ['Diponegoro', 'Pattimura', 'Imam Bonjol', 'Sudirman'],
+        answer: 'Diponegoro'
+      },
+      {
+        question: 'Apa nama makanan khas Aceh yang terbuat dari mie?',
+        options: ['Mie Aceh', 'Mie Goreng', 'Mie Kocok', 'Mie Bakso'],
+        answer: 'Mie Aceh'
+      },
+      {
+        question: 'Siapakah penulis novel "Edensor"?',
+        options: ['Andrea Hirata', 'Tere Liye', 'Dee Lestari', 'Habiburrahman El Shirazy'],
+        answer: 'Andrea Hirata'
+      },
+      {
+        question: 'Apa nama provinsi yang beribukota di Jayapura?',
+        options: ['Papua', 'Papua Barat', 'Papua Tengah', 'Papua Selatan'],
+        answer: 'Papua'
+      },
+      {
+        question: 'Siapakah pahlawan nasional yang dikenal dengan nama "Ki Hajar Dewantara"?',
+        options: ['Ki Hajar Dewantara', 'RA Kartini', 'Dewi Sartika', 'HOS Tjokroaminoto'],
+        answer: 'Ki Hajar Dewantara'
+      },
+      {
+        question: 'Kota manakah yang dikenal sebagai "Kota Apel"?',
+        options: ['Malang', 'Surabaya', 'Bandung', 'Bogor'],
+        answer: 'Malang'
+      },
+      {
+        question: 'Apa nama tarian tradisional dari Sumatera Selatan?',
+        options: ['Tari Gending Sriwijaya', 'Tari Piring', 'Tari Saman', 'Tari Pendet'],
+        answer: 'Tari Gending Sriwijaya'
+      },
+      {
+        question: 'Siapakah penulis buku "Madre"?',
+        options: ['Dee Lestari', 'Andrea Hirata', 'Tere Liye', 'Habiburrahman El Shirazy'],
+        answer: 'Dee Lestari'
+      },
+      {
+        question: 'Apa nama suku asli dari Maluku?',
+        options: ['Suku Alifuru', 'Suku Asmat', 'Suku Dayak', 'Suku Batak'],
+        answer: 'Suku Alifuru'
+      },
+      {
+        question: 'Siapakah pahlawan nasional yang dikenal dengan nama "Imam Bonjol"?',
+        options: ['Tuanku Imam Bonjol', 'Diponegoro', 'Pattimura', 'Sudirman'],
+        answer: 'Tuanku Imam Bonjol'
+      },
+      {
+        question: 'Kota manakah yang dikenal sebagai "Kota Minyak"?',
+        options: ['Balikpapan', 'Samarinda', 'Banjarmasin', 'Pontianak'],
+        answer: 'Balikpapan'
+      },
+      {
+        question: 'Apa nama alat musik tradisional dari Jawa Tengah?',
+        options: ['Gamelan', 'Angklung', 'Kolintang', 'Sasando'],
+        answer: 'Gamelan'
+      },
+      {
+        question: 'Siapakah penulis buku "Hafalan Shalat Delisa"?',
+        options: ['Tere Liye', 'Andrea Hirata', 'Habiburrahman El Shirazy', 'Dee Lestari'],
+        answer: 'Tere Liye'
+      },
+      {
+        question: 'Apa nama makanan khas Manado yang terbuat dari jagung?',
+        options: ['Brenebon', 'Tinutuan', 'Cakalang Fufu', 'Panada'],
+        answer: 'Tinutuan'
+      },
+      {
+        question: 'Siapakah penulis novel "Negeri 5 Menara"?',
+        options: ['Ahmad Fuadi', 'Andrea Hirata', 'Tere Liye', 'Habiburrahman El Shirazy'],
+        answer: 'Ahmad Fuadi'
+      },
+      {
+        question: 'Apa nama provinsi yang beribukota di Kupang?',
+        options: ['Nusa Tenggara Timur', 'Nusa Tenggara Barat', 'Bali', 'Papua'],
+        answer: 'Nusa Tenggara Timur'
+      },
+      {
+        question: 'Siapakah pahlawan nasional yang dikenal dengan nama "Dewi Sartika"?',
+        options: ['Dewi Sartika', 'RA Kartini', 'Martha Christina Tiahahu', 'Cut Nyak Dien'],
+        answer: 'Dewi Sartika'
+      },
+      {
+        question: 'Kota manakah yang dikenal sebagai "Kota Lumpia"?',
+        options: ['Semarang', 'Solo', 'Surabaya', 'Yogyakarta'],
+        answer: 'Semarang'
+      },
+      {
+        question: 'Apa nama tarian tradisional dari Papua?',
+        options: ['Tari Yospan', 'Tari Kecak', 'Tari Piring', 'Tari Pendet'],
+        answer: 'Tari Yospan'
+      },
+      {
+        question: 'Siapakah penulis buku "Laskar Pelangi"?',
+        options: ['Andrea Hirata', 'Tere Liye', 'Dee Lestari', 'Habiburrahman El Shirazy'],
+        answer: 'Andrea Hirata'
+      },
+      {
+        question: 'Apa nama suku asli dari Lombok?',
+        options: ['Suku Sasak', 'Suku Dayak', 'Suku Asmat', 'Suku Batak'],
+        answer: 'Suku Sasak'
+      },
+      {
+        question: 'Siapakah pahlawan nasional yang dikenal dengan nama "Sam Ratulangi"?',
+        options: ['Sam Ratulangi', 'Pattimura', 'Diponegoro', 'Imam Bonjol'],
+        answer: 'Sam Ratulangi'
+      },
+      {
+        question: 'Apa nama alat musik tradisional dari Riau?',
+        options: ['Rebab', 'Gong', 'Angklung', 'Gamelan'],
+        answer: 'Rebab'
+      },
+      {
+        question: 'Siapakah penulis buku "Sang Pemimpi"?',
+        options: ['Andrea Hirata', 'Tere Liye', 'Habiburrahman El Shirazy', 'Dee Lestari'],
+        answer: 'Andrea Hirata'
+      },
+      {
+        question: 'Apa nama provinsi yang terletak di Pulau Madura?',
+        options: ['Jawa Timur', 'Jawa Tengah', 'Bali', 'Nusa Tenggara Barat'],
+        answer: 'Jawa Timur'
+      },
+      {
+        question: 'Siapakah pahlawan nasional yang berasal dari Nusa Tenggara Timur?',
+        options: ['Frans Seda', 'Sam Ratulangi', 'Patimura', 'Jenderal Sudirman'],
+        answer: 'Frans Seda'
+      },
+      {
+        question: 'Apa nama ibu kota provinsi Kalimantan Barat?',
+        options: ['Pontianak', 'Samarinda', 'Banjarmasin', 'Balikpapan'],
+        answer: 'Pontianak'
+      },
+      {
+        question: 'Siapakah penulis novel "Gadis Kretek"?',
+        options: ['Ratih Kumala', 'Leila S. Chudori', 'Andrea Hirata', 'Dee Lestari'],
+        answer: 'Ratih Kumala'
+      },
+      {
+        question: 'Berapakah jumlah suku bangsa di Papua?',
+        options: ['250', '275', '300', '350'],
+        answer: '275'
+      },
+      {
+        question: 'Apa nama alat musik tradisional dari Bali?',
+        options: ['Gamelan', 'Angklung', 'Kolintang', 'Sasando'],
+        answer: 'Gamelan'
+      },
+      {
+        question: 'Siapakah penulis buku "Ronggeng Dukuh Paruk"?',
+        options: ['Ahmad Tohari', 'Pramoedya Ananta Toer', 'Tere Liye', 'Andrea Hirata'],
+        answer: 'Ahmad Tohari'
+      },
+      {
+        question: 'Kota manakah yang dikenal sebagai "Kota Pelajar"?',
+        options: ['Yogyakarta', 'Bandung', 'Jakarta', 'Surabaya'],
+        answer: 'Yogyakarta'
+      },
+      {
+        question: 'Apa nama tarian tradisional dari Betawi?',
+        options: ['Tari Topeng', 'Tari Jaipong', 'Tari Pendet', 'Tari Kecak'],
+        answer: 'Tari Topeng'
+      },
+      {
+        question: 'Siapakah penulis buku "Cantik Itu Luka"?',
+        options: ['Eka Kurniawan', 'Andrea Hirata', 'Tere Liye', 'Habiburrahman El Shirazy'],
+        answer: 'Eka Kurniawan'
+      },
+      {
+        question: 'Apa nama makanan khas Palembang yang terbuat dari ikan?',
+        options: ['Pempek', 'Gulai', 'Sate', 'Rendang'],
+        answer: 'Pempek'
+      },
+            {
+        question: 'Siapakah penulis novel "Saman"?',
+        options: ['Ayu Utami', 'Leila S. Chudori', 'Ratih Kumala', 'Dee Lestari'],
+        answer: 'Ayu Utami'
+      },
+      {
+        question: 'Apa nama provinsi yang beribukota di Palu?',
+        options: ['Sulawesi Tengah', 'Sulawesi Selatan', 'Sulawesi Utara', 'Sulawesi Tenggara'],
+        answer: 'Sulawesi Tengah'
+      },
+      {
+        question: 'Siapakah pahlawan nasional yang dikenal dengan nama "Teuku Umar"?',
+        options: ['Teuku Umar', 'Cut Nyak Dien', 'Imam Bonjol', 'Diponegoro'],
+        answer: 'Teuku Umar'
+      },
+      {
+        question: 'Apa nama makanan khas Yogyakarta yang terbuat dari ayam kampung?',
+        options: ['Gudeg', 'Ayam Goreng', 'Ayam Betutu', 'Sate Ayam'],
+        answer: 'Gudeg'
+      },
+      {
+        question: 'Siapakah penulis novel "Bumi Manusia"?',
+        options: ['Pramoedya Ananta Toer', 'Ahmad Tohari', 'Andrea Hirata', 'Eka Kurniawan'],
+        answer: 'Pramoedya Ananta Toer'
+      },
+      {
+        question: 'Apa nama suku asli dari Sumatera Selatan?',
+        options: ['Suku Komering', 'Suku Batak', 'Suku Dayak', 'Suku Asmat'],
+        answer: 'Suku Komering'
+      },
+      {
+        question: 'Siapakah penulis buku "Ayat-Ayat Cinta"?',
+        options: ['Habiburrahman El Shirazy', 'Tere Liye', 'Andrea Hirata', 'Dee Lestari'],
+        answer: 'Habiburrahman El Shirazy'
+      },
+      {
+        question: 'Apa nama provinsi yang beribukota di Jambi?',
+        options: ['Jambi', 'Riau', 'Sumatera Barat', 'Sumatera Utara'],
+        answer: 'Jambi'
+      },
+      {
+        question: 'Siapakah pahlawan nasional yang dikenal dengan nama "Raden Fatah"?',
+        options: ['Raden Fatah', 'Diponegoro', 'Pattimura', 'Sudirman'],
+        answer: 'Raden Fatah'
+      },
+      {
+        question: 'Apa nama makanan khas dari Betawi yang berkuah santan?',
+        options: ['Soto Betawi', 'Gado-Gado', 'Ketoprak', 'Asinan'],
+        answer: 'Soto Betawi'
+      },
+      {
+        question: 'Siapakah penulis novel "Sang Alkemis"?',
+        options: ['Paulo Coelho', 'Gabriel Garcia Marquez', 'J.K. Rowling', 'George Orwell'],
+        answer: 'Paulo Coelho'
+      },
+      {
+        question: 'Apa nama suku asli dari Sulawesi Tenggara?',
+        options: ['Suku Tolaki', 'Suku Bugis', 'Suku Toraja', 'Suku Minahasa'],
+        answer: 'Suku Tolaki'
+      },
+      {
+        question: 'Siapakah pahlawan nasional yang dikenal dengan nama "Raden Patah"?',
+        options: ['Raden Patah', 'Diponegoro', 'Imam Bonjol', 'Pattimura'],
+        answer: 'Raden Patah'
+      },
+      {
+        question: 'Apa nama alat musik tradisional dari Sunda?',
+        options: ['Angklung', 'Gamelan', 'Kolintang', 'Sasando'],
+        answer: 'Angklung'
+      },
+      {
+        question: 'Siapakah penulis buku "Laskar Pelangi"?',
+        options: ['Andrea Hirata', 'Tere Liye', 'Habiburrahman El Shirazy', 'Dee Lestari'],
+        answer: 'Andrea Hirata'
+      },
+      {
+        question: 'Apa nama provinsi yang beribukota di Samarinda?',
+        options: ['Kalimantan Timur', 'Kalimantan Barat', 'Kalimantan Selatan', 'Kalimantan Tengah'],
+        answer: 'Kalimantan Timur'
+      },
+      {
+        question: 'Siapakah penulis buku "Dilan 1990"?',
+        options: ['Pidi Baiq', 'Andrea Hirata', 'Tere Liye', 'Dee Lestari'],
+        answer: 'Pidi Baiq'
+      },
+      {
+        question: 'Apa nama makanan khas dari Minangkabau yang terkenal?',
+        options: ['Rendang', 'Gulai', 'Sate Padang', 'Lontong Sayur'],
+        answer: 'Rendang'
+      },
+      {
+        question: 'Siapakah penulis buku "Perahu Kertas"?',
+        options: ['Dee Lestari', 'Andrea Hirata', 'Tere Liye', 'Habiburrahman El Shirazy'],
+        answer: 'Dee Lestari'
+      },
+      {
+        question: 'Apa nama alat musik tradisional dari Sumatera Barat?',
+        options: ['Saluang', 'Gamelan', 'Kolintang', 'Angklung'],
+        answer: 'Saluang'
+      },
+      {
+        question: 'Siapakah penulis buku "Cantik Itu Luka"?',
+        options: ['Eka Kurniawan', 'Andrea Hirata', 'Tere Liye', 'Dee Lestari'],
+        answer: 'Eka Kurniawan'
+      },
+      {
+        question: 'Apa nama makanan khas dari Bali yang terbuat dari ayam?',
+        options: ['Ayam Betutu', 'Lawar', 'Sate Lilit', 'Babi Guling'],
+        answer: 'Ayam Betutu'
+      },
+      {
+        question: 'Siapakah penulis buku "Supernova"?',
+        options: ['Dee Lestari', 'Andrea Hirata', 'Tere Liye', 'Habiburrahman El Shirazy'],
+        answer: 'Dee Lestari'
+      },
+      {
+        question: 'Apa nama provinsi yang beribukota di Palembang?',
+        options: ['Sumatera Selatan', 'Sumatera Barat', 'Sumatera Utara', 'Riau'],
+        answer: 'Sumatera Selatan'
+      },
+      {
+        question: 'Siapakah penulis buku "Anak Bajang Menggiring Angin"?',
+        options: ['Sindhunata', 'Andrea Hirata', 'Tere Liye', 'Dee Lestari'],
+        answer: 'Sindhunata'
+      },
+      {
+        question: 'Apa nama makanan khas dari Aceh yang terbuat dari mie?',
+        options: ['Mie Aceh', 'Gulai Ikan', 'Sate Matang', 'Ayam Tangkap'],
+        answer: 'Mie Aceh'
+      },
+      {
+        question: 'Siapakah penulis buku "Orang-Orang Biasa"?',
+        options: ['Andrea Hirata', 'Tere Liye', 'Habiburrahman El Shirazy', 'Dee Lestari'],
+        answer: 'Andrea Hirata'
+      },
+      {
+        question: 'Apa nama suku asli dari Papua?',
+        options: ['Suku Asmat', 'Suku Dayak', 'Suku Batak', 'Suku Bugis'],
+        answer: 'Suku Asmat'
+      },
+      {
+        question: 'Siapakah penulis buku "Rectoverso"?',
+        options: ['Dee Lestari', 'Andrea Hirata', 'Tere Liye', 'Habiburrahman El Shirazy'],
+        answer: 'Dee Lestari'
+      },
+      {
+        question: 'Apa nama provinsi yang beribukota di Denpasar?',
+        options: ['Bali', 'Nusa Tenggara Barat', 'Nusa Tenggara Timur', 'Papua'],
+        answer: 'Bali'
+      },
+      {
+        question: 'Siapakah penulis buku "Pulang"?',
+        options: ['Leila S. Chudori', 'Andrea Hirata', 'Tere Liye', 'Dee Lestari'],
+        answer: 'Leila S. Chudori'
+      },
+      {
+        question: 'Apa nama makanan khas dari Palembang yang terbuat dari ikan?',
+        options: ['Pempek', 'Gulai', 'Sate', 'Rendang'],
+        answer: 'Pempek'
+      },
+      {
+        question: 'Siapakah penulis buku "Supernova: Ksatria, Putri, dan Bintang Jatuh"?',
+        options: ['Dee Lestari', 'Andrea Hirata', 'Tere Liye', 'Habiburrahman El Shirazy'],
+        answer: 'Dee Lestari'
+      },
+      {
+        question: 'Apa nama alat musik tradisional dari Sulawesi Selatan?',
+        options: ['Gendang', 'Angklung', 'Kolintang', 'Sasando'],
+        answer: 'Gendang'
+      },
+      {
+        question: 'Siapakah penulis buku "Bumi"?',
+        options: ['Tere Liye', 'Andrea Hirata', 'Dee Lestari', 'Habiburrahman El Shirazy'],
+        answer: 'Tere Liye'
+      },
+      {
+                question: 'Apa nama makanan khas dari Manado yang terbuat dari daging babi?',
+        options: ['Rica-Rica', 'Babi Tore', 'Tinutuan', 'Cakalang Fufu'],
+        answer: 'Babi Tore'
+      },
+      {
+        question: 'Siapakah penulis buku "Kambing Jantan"?',
+        options: ['Raditya Dika', 'Andrea Hirata', 'Tere Liye', 'Dee Lestari'],
+        answer: 'Raditya Dika'
+      },
+      {
+        question: 'Apa nama provinsi yang beribukota di Mataram?',
+        options: ['Nusa Tenggara Barat', 'Nusa Tenggara Timur', 'Bali', 'Papua'],
+        answer: 'Nusa Tenggara Barat'
+      },
+      {
+        question: 'Siapakah penulis novel "Genduk"?',
+        options: ['Sundari Mardjuki', 'Andrea Hirata', 'Tere Liye', 'Dee Lestari'],
+        answer: 'Sundari Mardjuki'
+      },
+      {
+        question: 'Apa nama suku asli dari Kalimantan Barat?',
+        options: ['Suku Dayak', 'Suku Banjar', 'Suku Batak', 'Suku Bugis'],
+        answer: 'Suku Dayak'
+      },
+      {
+        question: 'Siapakah penulis buku "Perempuan Bernama Arjuna"?',
+        options: ['Ayu Utami', 'Andrea Hirata', 'Tere Liye', 'Dee Lestari'],
+        answer: 'Ayu Utami'
+      },
+      {
+        question: 'Apa nama makanan khas dari Betawi yang terbuat dari ketan dan durian?',
+        options: ['Dodol Betawi', 'Kue Rangi', 'Kue Lumpur', 'Kue Ape'],
+        answer: 'Dodol Betawi'
+      },
+      {
+        question: 'Siapakah penulis buku "Galaksi Kinanthi"?',
+        options: ['Tasaro GK', 'Andrea Hirata', 'Tere Liye', 'Dee Lestari'],
+        answer: 'Tasaro GK'
+      },
+      {
+        question: 'Apa nama provinsi yang beribukota di Ambon?',
+        options: ['Maluku', 'Maluku Utara', 'Papua', 'Papua Barat'],
+        answer: 'Maluku'
+      },
+      {
+        question: 'Siapakah penulis novel "Amba"?',
+        options: ['Laksmi Pamuntjak', 'Andrea Hirata', 'Tere Liye', 'Dee Lestari'],
+        answer: 'Laksmi Pamuntjak'
+      },
+      {
+        question: 'Apa nama makanan khas dari Sumatera Barat yang terbuat dari daging sapi?',
+        options: ['Rendang', 'Gulai', 'Sate Padang', 'Lontong Sayur'],
+        answer: 'Rendang'
+      },
+      {
+        question: 'Siapakah penulis buku "Ketika Cinta Bertasbih"?',
+        options: ['Habiburrahman El Shirazy', 'Andrea Hirata', 'Tere Liye', 'Dee Lestari'],
+        answer: 'Habiburrahman El Shirazy'
+      },
+      {
+        question: 'Apa nama suku asli dari Nusa Tenggara Timur?',
+        options: ['Suku Sumba', 'Suku Batak', 'Suku Bugis', 'Suku Dayak'],
+        answer: 'Suku Sumba'
+      },
+      {
+        question: 'Siapakah penulis novel "Brownies"?',
+        options: ['Fira Basuki', 'Andrea Hirata', 'Tere Liye', 'Dee Lestari'],
+        answer: 'Fira Basuki'
+      },
+      {
+        question: 'Apa nama alat musik tradisional dari Maluku?',
+        options: ['Tifa', 'Gamelan', 'Kolintang', 'Sasando'],
+        answer: 'Tifa'
+      },
+      {
+        question: 'Siapakah penulis buku "Garis Batas"?',
+        options: ['Agustinus Wibowo', 'Andrea Hirata', 'Tere Liye', 'Dee Lestari'],
+        answer: 'Agustinus Wibowo'
+      },
+      {
+        question: 'Apa nama provinsi yang beribukota di Kendari?',
+        options: ['Sulawesi Tenggara', 'Sulawesi Selatan', 'Sulawesi Tengah', 'Sulawesi Utara'],
+        answer: 'Sulawesi Tenggara'
+      },
+      {
+        question: 'Siapakah penulis novel "Ronggeng Dukuh Paruk"?',
+        options: ['Ahmad Tohari', 'Andrea Hirata', 'Tere Liye', 'Dee Lestari'],
+        answer: 'Ahmad Tohari'
+      },
+      {
+        question: 'Apa nama makanan khas dari Manado yang terbuat dari ikan cakalang?',
+        options: ['Cakalang Fufu', 'Tinutuan', 'Brenebon', 'Panada'],
+        answer: 'Cakalang Fufu'
+      },
+      {
+        question: 'Siapakah penulis buku "Padang Bulan"?',
+        options: ['Andrea Hirata', 'Tere Liye', 'Habiburrahman El Shirazy', 'Dee Lestari'],
+        answer: 'Andrea Hirata'
+      },
+      {
+        question: 'Apa nama alat musik tradisional dari Sulawesi Utara?',
+        options: ['Kolintang', 'Gamelan', 'Angklung', 'Sasando'],
+        answer: 'Kolintang'
+      },
+      {
+        question: 'Siapakah penulis buku "Burung-Burung Manyar"?',
+        options: ['Y.B. Mangunwijaya', 'Andrea Hirata', 'Tere Liye', 'Dee Lestari'],
+        answer: 'Y.B. Mangunwijaya'
+      },
+      {
+        question: 'Apa nama makanan khas dari Jawa Barat yang terbuat dari ikan?',
+        options: ['Pepes Ikan', 'Sate Maranggi', 'Lotek', 'Karedok'],
+        answer: 'Pepes Ikan'
+      },
+      {
+        question: 'Siapakah penulis buku "Rindu"?',
+        options: ['Tere Liye', 'Andrea Hirata', 'Dee Lestari', 'Habiburrahman El Shirazy'],
+        answer: 'Tere Liye'
+      },
+      {
+        question: 'Apa nama suku asli dari Sumatera Utara?',
+        options: ['Suku Batak', 'Suku Minangkabau', 'Suku Melayu', 'Suku Aceh'],
+        answer: 'Suku Batak'
+      },
+      {
+        question: 'Siapakah penulis buku "Filosofi Kopi"?',
+        options: ['Dee Lestari', 'Andrea Hirata', 'Tere Liye', 'Habiburrahman El Shirazy'],
+        answer: 'Dee Lestari'
+      },
+      {
+        question: 'Apa nama provinsi yang beribukota di Serang?',
+        options: ['Banten', 'Jawa Barat', 'Jawa Tengah', 'Jawa Timur'],
+        answer: 'Banten'
+      },
+      {
+        question: 'Siapakah penulis novel "Supernova: Partikel"?',
+        options: ['Dee Lestari', 'Andrea Hirata', 'Tere Liye', 'Habiburrahman El Shirazy'],
+        answer: 'Dee Lestari'
+      },
+      {
+        question: 'Apa nama makanan khas dari Sulawesi Selatan yang terbuat dari ikan?',
+        options: ['Coto Makassar', 'Konro', 'Pallumara', 'Buras'],
+        answer: 'Coto Makassar'
+      },
+      {
+        question: 'Siapakah penulis novel "Sabtu Bersama Bapak"?',
+        options: ['Adhitya Mulya', 'Andrea Hirata', 'Tere Liye', 'Dee Lestari'],
+        answer: 'Adhitya Mulya'
+      },
+      {
+        question: 'Apa nama alat musik tradisional dari Nusa Tenggara Timur?',
+        options: ['Sasando', 'Gamelan', 'Kolintang', 'Angklung'],
+        answer: 'Sasando'
+      },
+      {
+        question: 'Siapakah penulis buku "Lelaki Harimau"?',
+        options: ['Eka Kurniawan', 'Andrea Hirata', 'Tere Liye', 'Dee Lestari'],
+        answer: 'Eka Kurniawan'
+      },
+      {
+        question: 'Apa nama provinsi yang beribukota di Bandar Lampung?',
+        options: ['Lampung', 'Sumatera Selatan', 'Sumatera Utara', 'Sumatera Barat'],
+        answer: 'Lampung'
+      },
+      {
+        question: 'Siapakah penulis novel "Bidadari-Bidadari Surga"?',
+        options: ['Tere Liye', 'Andrea Hirata', 'Habiburrahman El Shirazy', 'Dee Lestari'],
+        answer: 'Tere Liye'
+      }
+    ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+
+    function loadQuestion() {
+    const questionContainer = document.getElementById('question-container');
+    const questionElement = document.getElementById('question');
+    const optionsElement = document.getElementById('options');
+
+    const currentQuestion = questions[currentQuestionIndex];
+    questionElement.innerText = currentQuestion.question;
+    optionsElement.innerHTML = '';
+
+    currentQuestion.options.forEach(option => {
+      const button = document.createElement('button');
+      button.innerText = option;
+      button.classList.add('option-button');
+      button.addEventListener('click', () => selectOption(option));
+      optionsElement.appendChild(button);
+    });
+
+    questionContainer.classList.add('show');
+  }
+
+  function selectOption(selectedOption) {
+    const currentQuestion = questions[currentQuestionIndex];
+    const questionContainer = document.getElementById('question-container');
+
+    if (selectedOption === currentQuestion.answer) {
+      score++;
+      Swal.fire('Correct!', '', 'success');
+    } else {
+      Swal.fire('Wrong!', `The correct answer was: ${currentQuestion.answer}`, 'error');
+    }
+
+    currentQuestionIndex++;
+    if (currentQuestionIndex < questions.length) {
+      loadQuestion();
+    } else {
+      
+      questionContainer.classList.remove('show');
+      Swal.fire('Quiz over!', `Your score is ${score}/${questions.length}.`, 'info');
+    }
+  }
+
+  document.getElementById('start-button').addEventListener('click', () => {
+    document.getElementById('start-screen').style.display = 'none';
+    document.getElementById('quiz-container').style.display = 'block';
+    loadQuestion();
+  });
+</script>
+
+</body>
+</html>
